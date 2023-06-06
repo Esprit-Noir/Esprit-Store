@@ -3,6 +3,9 @@ const Product = require('../models/Product');
 const { default: slugify } = require('slugify');
 const User = require('../models/User');
 const { query } = require('express');
+const { validateMongodbId } = require('../utils/ValidateMongdbId');
+const { cloudinaryUploadImg } = require('../utils/Cloudinary');
+// const { path } = require('../app');
 
 // Create Product
 exports.createProduct = expressAsyncHandler(async (req, res) => {
@@ -20,6 +23,7 @@ exports.createProduct = expressAsyncHandler(async (req, res) => {
 // Get Single Product
 exports.getProduct = expressAsyncHandler(async (req, res) => {
   const { id } = req.params;
+  validateMongodbId(id);
   try {
     const product = await Product.findById(id);
 
@@ -89,6 +93,7 @@ exports.getAllProduct = expressAsyncHandler(async (req, res) => {
 // Update Product
 exports.updateProduct = expressAsyncHandler(async (req, res) => {
   const { id } = req.params;
+  validateMongodbId(id);
   try {
     if (req.body.title) {
       req.body.slug = slugify(req.body.title);
@@ -112,6 +117,7 @@ exports.updateProduct = expressAsyncHandler(async (req, res) => {
 // Delete Product
 exports.deleteProduct = expressAsyncHandler(async (req, res) => {
   const { id } = req.params;
+  validateMongodbId(id);
   try {
     const product = await Product.findByIdAndDelete(id);
     if (!product) {
@@ -132,6 +138,8 @@ exports.deleteProduct = expressAsyncHandler(async (req, res) => {
 exports.addToWishlist = expressAsyncHandler(async (req, res) => {
   const { _id } = req.user;
   const { prodId } = req.body;
+  validateMongodbId(_id);
+  validateMongodbId(prodId);
 
   try {
     const user = await User.findById(_id);
@@ -218,6 +226,35 @@ exports.rating = expressAsyncHandler(async (req, res) => {
     );
 
     res.json(finalProduct);
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+exports.uploadImage = expressAsyncHandler(async (req, res) => {
+  const { id } = req.params;
+  validateMongodbId(id);
+  try {
+    const uploader = (path) => cloudinaryUploadImg(path, 'images');
+    const urls = [];
+    const files = req.files;
+
+    for (const file of files) {
+      const { path } = file;
+
+      const newPath = await uploader(path);
+      urls.push(newPath);
+    }
+    const product = await Product.findByIdAndUpdate(
+      id,
+      {
+        images: urls.map((file) => {
+          return file;
+        }),
+      },
+      { new: true }
+    );
+    res.json(product);
   } catch (error) {
     throw new Error(error);
   }
