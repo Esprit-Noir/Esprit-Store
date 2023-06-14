@@ -39,7 +39,7 @@ exports.productImageResize = async (req, res, next) => {
         .resize(300, 300)
         .toFormat('jpeg')
         .jpeg({ quality: 90 })
-        .toFile(`${__dirname}/public/images/products/${file.filename}`);
+        .toFile(`public/images/products/${file.filename}`);
     })
   );
   next();
@@ -53,7 +53,7 @@ exports.blogImageResize = async (req, res, next) => {
         .resize(300, 300)
         .toFormat('jpeg')
         .jpeg({ quality: 90 })
-        .toFile(`${__dirname}/public/images/blogs/${file.filename}`);
+        .toFile(`public/images/blogs/${file.filename}`);
     })
   );
   next();

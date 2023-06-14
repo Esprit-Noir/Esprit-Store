@@ -19,7 +19,13 @@ const router = express.Router();
 router.route('/create').post(authMiddleware, isAdmin, createProduct);
 router
   .route('/upload/:id')
-  .put(authMiddleware, isAdmin, uploadPhoto.array('images', 10), uploadImage);
+  .put(
+    authMiddleware,
+    isAdmin,
+    uploadPhoto.array('images', 10),
+    productImageResize,
+    uploadImage
+  );
 router.route('/').get(getAllProduct);
 router.route('/wishlist').put(authMiddleware, addToWishlist);
 router.route('/rating').put(authMiddleware, rating);

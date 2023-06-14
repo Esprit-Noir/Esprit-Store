@@ -4,7 +4,7 @@ const { default: slugify } = require('slugify');
 const User = require('../models/User');
 const { query } = require('express');
 const { validateMongodbId } = require('../utils/ValidateMongdbId');
-const { cloudinaryUploadImg } = require('../utils/Cloudinary');
+const cloudinaryUploadImg = require('../utils/Cloudinary');
 // const { path } = require('../app');
 
 // Create Product
